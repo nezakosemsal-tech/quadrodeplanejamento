@@ -1,0 +1,9 @@
+{
+  "name": "quadro-de-planejamento",
+  "version": "1.0.0",
+  "description": "Quadro de planejamento visual com salvamento local - estilo Milanote",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

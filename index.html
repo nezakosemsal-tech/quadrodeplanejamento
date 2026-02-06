@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quadro de Planejamento</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- ===== SIDEBAR ===== -->
+    <aside id="sidebar">
+      <div class="sidebar-logo" title="Quadro de Planejamento">
+        <svg viewBox="0 0 32 32" width="28" height="28"><rect x="3" y="3" width="11" height="11" rx="2" fill="currentColor" opacity="0.9"/><rect x="18" y="3" width="11" height="11" rx="2" fill="currentColor" opacity="0.6"/><rect x="3" y="18" width="11" height="11" rx="2" fill="currentColor" opacity="0.6"/><rect x="18" y="18" width="11" height="11" rx="2" fill="currentColor" opacity="0.3"/></svg>
+      </div>
+
+      <div class="sidebar-tools">
+        <button class="tool-btn" data-tool="note" title="Nota (N)">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+          <span>Nota</span>
+        </button>
+
+        <button class="tool-btn" data-tool="todo" title="Lista de Tarefas (T)">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          <span>Tarefas</span>
+        </button>
+
+        <button class="tool-btn" data-tool="image" title="Imagem (I)">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+          <span>Imagem</span>
+        </button>
+
+        <button class="tool-btn" data-tool="link" title="Link (L)">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+          <span>Link</span>
+        </button>
+
+        <button class="tool-btn" data-tool="column" title="Coluna (C)">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/></svg>
+          <span>Coluna</span>
+        </button>
+
+        <button class="tool-btn" data-tool="board" title="Sub-quadro (B)">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg>
+          <span>Quadro</span>
+        </button>
+
+        <div class="tool-divider"></div>
+
+        <button class="tool-btn" data-tool="arrow" title="Conexão / Seta (A)">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+          <span>Seta</span>
+        </button>
+      </div>
+
+      <div class="sidebar-bottom">
+        <button class="tool-btn" id="dark-mode-btn" title="Modo escuro (D)">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+        <button class="tool-btn" id="export-btn" title="Exportar dados">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </button>
+        <button class="tool-btn" id="import-btn" title="Importar dados">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN AREA ===== -->
+    <main id="main-area">
+      <!-- Top Bar -->
+      <header id="topbar">
+        <div class="topbar-left">
+          <div id="breadcrumb"></div>
+        </div>
+        <div class="topbar-center">
+          <div class="search-wrapper">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-input" placeholder="Pesquisar... (Ctrl+F)">
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-btn" id="undo-btn" title="Desfazer (Ctrl+Z)" disabled>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+          </button>
+          <button class="topbar-btn" id="redo-btn" title="Refazer (Ctrl+Y)" disabled>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.13-9.36L23 10"/></svg>
+          </button>
+          <div class="zoom-controls">
+            <button class="topbar-btn" id="zoom-out-btn" title="Diminuir zoom">−</button>
+            <span id="zoom-level">100%</span>
+            <button class="topbar-btn" id="zoom-in-btn" title="Aumentar zoom">+</button>
+            <button class="topbar-btn" id="zoom-fit-btn" title="Ajustar zoom">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Canvas Viewport -->
+      <div id="canvas-viewport">
+        <div id="canvas">
+          <svg id="connections-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===== CONTEXT MENU ===== -->
+  <div id="context-menu" class="hidden">
+    <button data-action="add-note"><span class="cm-icon">📝</span> Nova Nota</button>
+    <button data-action="add-todo"><span class="cm-icon">✅</span> Nova Lista</button>
+    <button data-action="add-image"><span class="cm-icon">🖼️</span> Nova Imagem</button>
+    <button data-action="add-link"><span class="cm-icon">🔗</span> Novo Link</button>
+    <button data-action="add-column"><span class="cm-icon">📊</span> Nova Coluna</button>
+    <button data-action="add-board"><span class="cm-icon">📋</span> Novo Quadro</button>
+    <div class="cm-divider"></div>
+    <button data-action="paste"><span class="cm-icon">📋</span> Colar</button>
+    <button data-action="select-all"><span class="cm-icon">☐</span> Selecionar Tudo</button>
+  </div>
+
+  <!-- ===== CARD CONTEXT MENU ===== -->
+  <div id="card-context-menu" class="hidden">
+    <button data-action="edit"><span class="cm-icon">✏️</span> Editar</button>
+    <button data-action="duplicate"><span class="cm-icon">📋</span> Duplicar</button>
+    <button data-action="color"><span class="cm-icon">🎨</span> Cor</button>
+    <button data-action="copy"><span class="cm-icon">📄</span> Copiar</button>
+    <button data-action="bring-front"><span class="cm-icon">⬆️</span> Trazer para Frente</button>
+    <button data-action="send-back"><span class="cm-icon">⬇️</span> Enviar para Trás</button>
+    <button data-action="add-cover" class="board-only"><span class="cm-icon">🖼️</span> Adicionar Capa</button>
+    <div class="cm-divider"></div>
+    <button data-action="delete" class="danger"><span class="cm-icon">🗑️</span> Excluir</button>
+  </div>
+
+  <!-- ===== COLOR PICKER ===== -->
+  <div id="color-picker" class="hidden">
+    <button class="color-swatch" data-color="#ffffff" style="background:#ffffff" title="Branco"></button>
+    <button class="color-swatch" data-color="#fff8e1" style="background:#fff8e1" title="Amarelo"></button>
+    <button class="color-swatch" data-color="#fff3e0" style="background:#fff3e0" title="Laranja"></button>
+    <button class="color-swatch" data-color="#fce4ec" style="background:#fce4ec" title="Rosa"></button>
+    <button class="color-swatch" data-color="#ffebee" style="background:#ffebee" title="Vermelho"></button>
+    <button class="color-swatch" data-color="#f3e5f5" style="background:#f3e5f5" title="Roxo"></button>
+    <button class="color-swatch" data-color="#e3f2fd" style="background:#e3f2fd" title="Azul"></button>
+    <button class="color-swatch" data-color="#e8f5e9" style="background:#e8f5e9" title="Verde"></button>
+    <button class="color-swatch" data-color="#efebe9" style="background:#efebe9" title="Marrom"></button>
+    <button class="color-swatch" data-color="#eceff1" style="background:#eceff1" title="Cinza"></button>
+  </div>
+
+  <!-- ===== CONNECTION COLOR PICKER ===== -->
+  <div id="conn-color-picker" class="hidden"></div>
+
+  <!-- ===== FORMAT TOOLBAR ===== -->
+  <div id="format-toolbar" class="hidden">
+    <button data-fmt="bold" title="Negrito (Ctrl+B)"><strong>B</strong></button>
+    <button data-fmt="italic" title="Itálico (Ctrl+I)"><em>I</em></button>
+    <button data-fmt="underline" title="Sublinhado (Ctrl+U)"><u>U</u></button>
+    <button data-fmt="strikeThrough" title="Tachado"><s>S</s></button>
+    <div class="fmt-divider"></div>
+    <button data-fmt="insertUnorderedList" title="Lista">•</button>
+    <button data-fmt="insertOrderedList" title="Lista numerada">1.</button>
+    <div class="fmt-divider"></div>
+    <button data-fmt="formatBlock-h2" title="Título grande">H1</button>
+    <button data-fmt="formatBlock-h3" title="Título">H2</button>
+  </div>
+
+  <!-- ===== LINK MODAL ===== -->
+  <div id="modal-overlay" class="hidden">
+    <div id="modal">
+      <div id="modal-header">
+        <h3 id="modal-title">Adicionar Link</h3>
+        <button id="modal-close">×</button>
+      </div>
+      <div id="modal-body"></div>
+      <div id="modal-footer">
+        <button id="modal-cancel" class="btn-secondary">Cancelar</button>
+        <button id="modal-confirm" class="btn-primary">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SELECTION MARQUEE ===== -->
+  <div id="marquee" class="hidden"></div>
+
+  <!-- ===== TOAST NOTIFICATIONS ===== -->
+  <div id="toast-container"></div>
+
+  <!-- Hidden Inputs -->
+  <input type="file" id="image-input" accept="image/*,.gif" multiple hidden>
+  <input type="file" id="import-input" accept=".json" hidden>
+
+  <script src="app.js"></script>
+</body>
+</html>
