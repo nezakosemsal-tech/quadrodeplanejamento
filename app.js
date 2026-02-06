@@ -2532,10 +2532,16 @@
 
     // Copy/Paste
     if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
-      copyCards();
+      if (state.selectedCardIds.size > 0) {
+        e.preventDefault();
+        copyCards();
+      }
     }
     if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
-      pasteClipboard();
+      if (state.clipboard.length > 0) {
+        e.preventDefault();
+        pasteClipboard();
+      }
     }
 
     // Select all
@@ -2565,7 +2571,6 @@
     if (e.key === 't' || e.key === 'T') addCardFromTool('todo');
     if (e.key === 'i' || e.key === 'I') addCardFromTool('image');
     if (e.key === 'l' || e.key === 'L') addCardFromTool('link');
-    if (e.key === 'c' || e.key === 'C') addCardFromTool('column');
     if (e.key === 'b' || e.key === 'B') addCardFromTool('board');
     if (e.key === 'a' || e.key === 'A') { if (!e.ctrlKey && !e.metaKey) addCardFromTool('arrow'); }
 
