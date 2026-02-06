@@ -1994,10 +1994,22 @@
 
     // --- Export/Import ---
     $('#export-btn').addEventListener('click', exportData);
-    $('#import-btn').addEventListener('click', () => dom.importInput.click());
+    let importLock = false;
+    const importBtn = $('#import-btn');
+    importBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (importLock) return;
+      importLock = true;
+      importBtn.disabled = true;
+      dom.importInput.click();
+      setTimeout(() => { importLock = false; importBtn.disabled = false; }, 2000);
+    });
     dom.importInput.addEventListener('change', (e) => {
       if (e.target.files[0]) importData(e.target.files[0]);
       e.target.value = '';
+      importLock = false;
+      importBtn.disabled = false;
     });
 
     // --- Image input ---
@@ -2064,6 +2076,10 @@
     // --- Canvas viewport events ---
     dom.viewport.addEventListener('mousedown', onViewportMouseDown);
     document.addEventListener('mousemove', onDocumentMouseMove);
+    dom.viewport.addEventListener('mousemove', (e) => {
+      state.ui.lastMouseX = e.clientX;
+      state.ui.lastMouseY = e.clientY;
+    });
     document.addEventListener('mouseup', onDocumentMouseUp);
     dom.viewport.addEventListener('wheel', onViewportWheel, { passive: false });
     dom.viewport.addEventListener('dblclick', onViewportDblClick);
@@ -2075,7 +2091,7 @@
       if (!btn) return;
       const action = btn.dataset.action;
       hideAllMenus();
-      if (action === 'paste') pasteClipboard();
+      if (action === 'paste') pasteClipboard(state.ui.lastMouseX, state.ui.lastMouseY);
       else if (action === 'select-all') selectAllCards();
       else if (action && action.startsWith('add-')) {
         const type = action.replace('add-', '');
@@ -2282,9 +2298,11 @@
   }
 
   function onDocumentMouseMove(e) {
-    // Track mouse position for paste
-    state.ui.lastMouseX = e.clientX;
-    state.ui.lastMouseY = e.clientY;
+    // Always track mouse position for paste-at-cursor
+    if (e.clientX !== undefined && e.clientY !== undefined) {
+      state.ui.lastMouseX = e.clientX;
+      state.ui.lastMouseY = e.clientY;
+    }
 
     // Pan
     if (state.ui.isPanning) {
@@ -2462,13 +2480,20 @@
     }
   }
 
-  function pasteClipboard() {
+  function pasteClipboard(mouseX, mouseY) {
     if (state.clipboard.length === 0) return;
     pushHistory();
     deselectAll();
 
+    // Use provided mouse coordinates, or fallback to center of viewport
+    if (mouseX === undefined || mouseY === undefined || (mouseX === 0 && mouseY === 0)) {
+      const vpRect = dom.viewport.getBoundingClientRect();
+      mouseX = vpRect.left + vpRect.width / 2;
+      mouseY = vpRect.top + vpRect.height / 2;
+    }
+
     // Calculate paste position at cursor
-    const mouseCanvas = screenToCanvas(state.ui.lastMouseX, state.ui.lastMouseY);
+    const mouseCanvas = screenToCanvas(mouseX, mouseY);
 
     // Find bounding box center of copied cards
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
@@ -2563,7 +2588,7 @@
     if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
       if (state.clipboard.length > 0) {
         e.preventDefault();
-        pasteClipboard();
+        pasteClipboard(state.ui.lastMouseX, state.ui.lastMouseY);
       }
     }
 
