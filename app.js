@@ -1239,7 +1239,7 @@
       hitArea.setAttribute('d', curvePath);
       hitArea.setAttribute('class', 'connection-hit-area');
       hitArea.setAttribute('stroke', 'transparent');
-      hitArea.setAttribute('stroke-width', '20');
+      hitArea.setAttribute('stroke-width', '30');
       hitArea.setAttribute('fill', 'none');
       hitArea.dataset.connectionId = conn.id;
 
