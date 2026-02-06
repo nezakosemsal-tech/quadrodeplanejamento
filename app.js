@@ -21,6 +21,7 @@
     canvas: { panX: 0, panY: 0, zoom: 1 },
     ui: {
       darkMode: false,
+      snapping: false,
       isPanning: false,
       isDragging: false,
       isResizing: false,
@@ -1231,29 +1232,49 @@
       const color = conn.color || '#888888';
       const markerId = createArrowMarker(defs, color);
 
+      const curvePath = buildCurvePath(from, to, fromPos, toPos);
+
+      // Invisible wider hit-area path for easier clicking
+      const hitArea = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      hitArea.setAttribute('d', curvePath);
+      hitArea.setAttribute('class', 'connection-hit-area');
+      hitArea.setAttribute('stroke', 'transparent');
+      hitArea.setAttribute('stroke-width', '20');
+      hitArea.setAttribute('fill', 'none');
+      hitArea.dataset.connectionId = conn.id;
+
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('d', buildCurvePath(from, to, fromPos, toPos));
+      path.setAttribute('d', curvePath);
       path.setAttribute('class', 'connection-line');
       path.setAttribute('stroke', color);
       path.setAttribute('marker-end', `url(#${markerId})`);
       path.dataset.connectionId = conn.id;
 
-      // Right-click to change color
-      path.addEventListener('contextmenu', (e) => {
+      // Event handlers on the hit area (wider target)
+      function onContextMenu(e) {
         e.preventDefault();
         e.stopPropagation();
         showConnectionColorPicker(conn.id, e.clientX, e.clientY);
-      });
-
-      path.addEventListener('dblclick', (e) => {
+      }
+      function onDblClick(e) {
         e.stopPropagation();
         pushHistory();
         board.connections = board.connections.filter(c => c.id !== conn.id);
         renderConnections();
         autoSave();
         showToast('Conexão removida');
-      });
+      }
 
+      hitArea.addEventListener('contextmenu', onContextMenu);
+      hitArea.addEventListener('dblclick', onDblClick);
+      path.addEventListener('contextmenu', onContextMenu);
+      path.addEventListener('dblclick', onDblClick);
+
+      // Hover effect: highlight visible line when hovering hit area
+      hitArea.addEventListener('mouseenter', () => path.classList.add('hover'));
+      hitArea.addEventListener('mouseleave', () => path.classList.remove('hover'));
+
+      dom.connectionsSvg.appendChild(hitArea);
       dom.connectionsSvg.appendChild(path);
     });
   }
@@ -1564,8 +1585,15 @@
       const el = document.getElementById(id);
       if (!card || !el || !offsets[id]) return;
 
-      card.x = canvasPos.x + offsets[id].dx;
-      card.y = canvasPos.y + offsets[id].dy;
+      let newX = canvasPos.x + offsets[id].dx;
+      let newY = canvasPos.y + offsets[id].dy;
+      if (state.ui.snapping) {
+        const gridSize = 20;
+        newX = Math.round(newX / gridSize) * gridSize;
+        newY = Math.round(newY / gridSize) * gridSize;
+      }
+      card.x = newX;
+      card.y = newY;
       el.style.left = card.x + 'px';
       el.style.top = card.y + 'px';
     });
@@ -1951,6 +1979,16 @@
 
     // --- Dark mode ---
     $('#dark-mode-btn').addEventListener('click', toggleDarkMode);
+
+    // --- Snap toggle ---
+    const snapToggle = $('#snap-toggle');
+    if (snapToggle) {
+      snapToggle.addEventListener('click', () => {
+        state.ui.snapping = !state.ui.snapping;
+        snapToggle.classList.toggle('active', state.ui.snapping);
+        showToast(state.ui.snapping ? '🧲 Snapping ativado' : 'Snapping desativado');
+      });
+    }
 
     // --- Export/Import ---
     $('#export-btn').addEventListener('click', exportData);
@@ -2533,6 +2571,14 @@
 
     // Dark mode toggle
     if (e.key === 'd' || e.key === 'D') { if (!e.ctrlKey && !e.metaKey) toggleDarkMode(); }
+
+    // Snap toggle
+    if (e.key === 'g' || e.key === 'G') {
+      if (!e.ctrlKey && !e.metaKey) {
+        const snapBtn = $('#snap-toggle');
+        if (snapBtn) snapBtn.click();
+      }
+    }
 
     // Arrow keys to nudge selected cards
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key) && state.selectedCardIds.size > 0) {

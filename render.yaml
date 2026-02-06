@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: quadro-planejamento
+    env: node
+    plan: free
+    startCommand: npm start
+    buildCommand: npm install
