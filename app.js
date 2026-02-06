@@ -32,6 +32,8 @@
       editingCardId: null,
       activeTool: null,
       spacePressed: false,
+      lastMouseX: 0,
+      lastMouseY: 0,
       dragStart: null,
       dragCardOffsets: null,
       resizeCardId: null,
@@ -2280,6 +2282,10 @@
   }
 
   function onDocumentMouseMove(e) {
+    // Track mouse position for paste
+    state.ui.lastMouseX = e.clientX;
+    state.ui.lastMouseY = e.clientY;
+
     // Pan
     if (state.ui.isPanning) {
       state.canvas.panX = e.clientX - state.ui.panStart.x;
@@ -2460,6 +2466,23 @@
     if (state.clipboard.length === 0) return;
     pushHistory();
     deselectAll();
+
+    // Calculate paste position at cursor
+    const mouseCanvas = screenToCanvas(state.ui.lastMouseX, state.ui.lastMouseY);
+
+    // Find bounding box center of copied cards
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    state.clipboard.forEach(c => {
+      minX = Math.min(minX, c.x);
+      minY = Math.min(minY, c.y);
+      maxX = Math.max(maxX, c.x + (c.width || 260));
+      maxY = Math.max(maxY, c.y + (c.height || 160));
+    });
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+    const offsetX = mouseCanvas.x - centerX;
+    const offsetY = mouseCanvas.y - centerY;
+
     state.clipboard.forEach(cardData => {
       const extra = { ...cardData };
       delete extra.id;
@@ -2471,7 +2494,7 @@
         extra.linkedBoardId = null;
         extra.name = (cardData.name || 'Quadro') + ' (cópia)';
       }
-      const newCard = createCard(cardData.type, cardData.x + 30, cardData.y + 30, extra);
+      const newCard = createCard(cardData.type, cardData.x + offsetX, cardData.y + offsetY, extra);
       selectCard(newCard.id, true);
     });
   }
