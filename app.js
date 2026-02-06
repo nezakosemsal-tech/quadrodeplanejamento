@@ -2515,6 +2515,8 @@
       delete extra.createdAt;
       delete extra.updatedAt;
       delete extra.zIndex;
+      delete extra.x;
+      delete extra.y;
       if (cardData.type === 'board') {
         extra.linkedBoardId = null;
         extra.name = (cardData.name || 'Quadro') + ' (cópia)';
